@@ -3,18 +3,15 @@ use difference::{Changeset, Difference};
 use std::fs;
 
 fn main() {
-    // Load your YAML files into structured data.
     let yaml1_content = fs::read_to_string("file1.yaml").expect("Failed to read file1.yaml");
     let yaml2_content = fs::read_to_string("file2.yaml").expect("Failed to read file2.yaml");
 
     let yaml1: Value = serde_yaml::from_str(&yaml1_content).expect("Failed to parse file1.yaml");
     let yaml2: Value = serde_yaml::from_str(&yaml2_content).expect("Failed to parse file2.yaml");
 
-    // Traverse and construct full nested paths for changes.
     let mut paths = vec![];
     find_paths(&yaml1, &mut paths, "".to_string());
 
-    // Compare the two data structures.
     let changeset = Changeset::new(
         &serde_yaml::to_string(&yaml1).unwrap(),
         &serde_yaml::to_string(&yaml2).unwrap(),
@@ -34,12 +31,10 @@ fn main() {
     for change in &changeset.diffs {
         match change {
             Difference::Add(value) => {
-                // Get the full path for the added value.
                 let path = find_path(&yaml1, &yaml2, value);
                 println!("ADDED: {}", path);
             }
             Difference::Rem(value) => {
-                // Get the full path for the removed value.
                 let path = find_path(&yaml1, &yaml2, value);
                 println!("REMOVED: {}", path);
             }
